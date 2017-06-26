@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # Copyright 2014 BitPay Inc.
-# Copyright 2016-2017 The Bitcoin Core developers
+# Copyright 2016-2017 The manna Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
-"""Test framework for bitcoin utils.
+"""Test framework for manna utils.
 
 Runs automatically during `make check`.
 
@@ -37,7 +37,7 @@ def main():
     # Add the format/level to the logger
     logging.basicConfig(format=formatter, level=level)
 
-    bctester(config["environment"]["SRCDIR"] + "/test/util/data", "bitcoin-util-test.json", config["environment"])
+    bctester(config["environment"]["SRCDIR"] + "/test/util/data", "manna-util-test.json", config["environment"])
 
 def bctester(testDir, input_basename, buildenv):
     """ Loads and parses the input file, runs all tests and reports results"""
@@ -146,7 +146,7 @@ def bctest(testDir, testObj, buildenv):
         want_error = testObj["error_txt"]
         # Compare error text
         # TODO: ideally, we'd compare the strings exactly and also assert
-        # That stderr is empty if no errors are expected. However, bitcoin-tx
+        # That stderr is empty if no errors are expected. However, manna-tx
         # emits DISPLAY errors when running as a windows application on
         # linux through wine. Just assert that the expected error text appears
         # somewhere in stderr.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2014-2016 The Bitcoin Core developers
+# Copyright (c) 2014-2016 The manna Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test RPCs related to blockchainstate.
@@ -20,18 +20,18 @@ Tests correspond to code in rpc/blockchain.cpp.
 from decimal import Decimal
 import subprocess
 
-from test_framework.test_framework import BitcoinTestFramework
+from test_framework.test_framework import mannaTestFramework
 from test_framework.util import (
     assert_equal,
     assert_raises,
     assert_raises_jsonrpc,
     assert_is_hex_string,
     assert_is_hash_string,
-    bitcoind_processes,
+    mannad_processes,
 )
 
 
-class BlockchainTest(BitcoinTestFramework):
+class BlockchainTest(mannaTestFramework):
 
     def __init__(self):
         super().__init__()
@@ -139,10 +139,10 @@ class BlockchainTest(BitcoinTestFramework):
         self.nodes[0].generate(6)
         assert_equal(self.nodes[0].getblockcount(), 206)
         self.log.debug('Node should not stop at this height')
-        assert_raises(subprocess.TimeoutExpired, lambda: bitcoind_processes[0].wait(timeout=3))
+        assert_raises(subprocess.TimeoutExpired, lambda: mannad_processes[0].wait(timeout=3))
         self.nodes[0].generate(1)
         self.log.debug('Node should stop at this height...')
-        bitcoind_processes[0].wait(timeout=3)
+        mannad_processes[0].wait(timeout=3)
         self.nodes[0] = self.start_node(0, self.options.tmpdir)
         assert_equal(self.nodes[0].getblockcount(), 207)
 

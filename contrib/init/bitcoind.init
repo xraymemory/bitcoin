@@ -1,36 +1,36 @@
 #!/bin/bash
 #
-#  bitcoind The bitcoin core server.
+#  mannad The manna core server.
 #
 #
 # chkconfig: 345 80 20
-# description: bitcoind
-# processname: bitcoind
+# description: mannad
+# processname: mannad
 #
 
 # Source function library.
 . /etc/init.d/functions
 
-# you can override defaults in /etc/sysconfig/bitcoind, see below
-if [ -f /etc/sysconfig/bitcoind ]; then
-        . /etc/sysconfig/bitcoind
+# you can override defaults in /etc/sysconfig/mannad, see below
+if [ -f /etc/sysconfig/mannad ]; then
+        . /etc/sysconfig/mannad
 fi
 
 RETVAL=0
 
-prog=bitcoind
-# you can override the lockfile via BITCOIND_LOCKFILE in /etc/sysconfig/bitcoind
-lockfile=${BITCOIND_LOCKFILE-/var/lock/subsys/bitcoind}
+prog=mannad
+# you can override the lockfile via BITCOIND_LOCKFILE in /etc/sysconfig/mannad
+lockfile=${BITCOIND_LOCKFILE-/var/lock/subsys/mannad}
 
-# bitcoind defaults to /usr/bin/bitcoind, override with BITCOIND_BIN
-bitcoind=${BITCOIND_BIN-/usr/bin/bitcoind}
+# mannad defaults to /usr/bin/mannad, override with BITCOIND_BIN
+mannad=${BITCOIND_BIN-/usr/bin/mannad}
 
-# bitcoind opts default to -disablewallet, override with BITCOIND_OPTS
-bitcoind_opts=${BITCOIND_OPTS--disablewallet}
+# mannad opts default to -disablewallet, override with BITCOIND_OPTS
+mannad_opts=${BITCOIND_OPTS--disablewallet}
 
 start() {
     echo -n $"Starting $prog: "
-    daemon $DAEMONOPTS $bitcoind $bitcoind_opts
+    daemon $DAEMONOPTS $mannad $mannad_opts
     RETVAL=$?
     echo
     [ $RETVAL -eq 0 ] && touch $lockfile

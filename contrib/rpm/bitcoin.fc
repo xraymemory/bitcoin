@@ -1,8 +1,8 @@
-/usr/bin/bitcoin-cli		--	gen_context(system_u:object_r:bitcoin_exec_t,s0)
-/usr/sbin/bitcoind		--	gen_context(system_u:object_r:bitcoin_exec_t,s0)
-/usr/lib(64)?/bitcoin/bitcoind		--	gen_context(system_u:object_r:bitcoin_exec_t,s0)
+/usr/bin/manna-cli		--	gen_context(system_u:object_r:manna_exec_t,s0)
+/usr/sbin/mannad		--	gen_context(system_u:object_r:manna_exec_t,s0)
+/usr/lib(64)?/manna/mannad		--	gen_context(system_u:object_r:manna_exec_t,s0)
 
-/etc/bitcoin(/.*)?		gen_context(system_u:object_r:bitcoin_conf_t,s0)
-/var/lib/bitcoin(/.*)?		gen_context(system_u:object_r:bitcoin_var_lib_t,s0)
+/etc/manna(/.*)?		gen_context(system_u:object_r:manna_conf_t,s0)
+/var/lib/manna(/.*)?		gen_context(system_u:object_r:manna_var_lib_t,s0)
 
-(/var)?/run/bitcoind(/.*)?   gen_context(system_u:object_r:bitcoin_var_run_t,s0)
+(/var)?/run/mannad(/.*)?   gen_context(system_u:object_r:manna_var_run_t,s0)

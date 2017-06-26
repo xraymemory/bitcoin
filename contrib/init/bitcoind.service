@@ -1,15 +1,15 @@
 [Unit]
-Description=Bitcoin's distributed currency daemon
+Description=manna's distributed currency daemon
 After=network.target
 
 [Service]
-User=bitcoin
-Group=bitcoin
+User=manna
+Group=manna
 
 Type=forking
-PIDFile=/var/lib/bitcoind/bitcoind.pid
-ExecStart=/usr/bin/bitcoind -daemon -pid=/var/lib/bitcoind/bitcoind.pid \
--conf=/etc/bitcoin/bitcoin.conf -datadir=/var/lib/bitcoind -disablewallet
+PIDFile=/var/lib/mannad/mannad.pid
+ExecStart=/usr/bin/mannad -daemon -pid=/var/lib/mannad/mannad.pid \
+-conf=/etc/manna/manna.conf -datadir=/var/lib/mannad -disablewallet
 
 Restart=always
 PrivateTmp=true

@@ -1,13 +1,13 @@
 [Desktop Entry]
 Encoding=UTF-8
-Name=Bitcoin Core
-Comment=Connect to the Bitcoin P2P Network
-Comment[de]=Verbinde mit dem Bitcoin peer-to-peer Netzwerk
-Comment[fr]=Bitcoin, monnaie virtuelle cryptographique pair à pair
-Comment[tr]=Bitcoin, eşten eşe kriptografik sanal para birimi
-Exec=bitcoin-qt %u
+Name=manna Core
+Comment=Connect to the manna P2P Network
+Comment[de]=Verbinde mit dem manna peer-to-peer Netzwerk
+Comment[fr]=manna, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=manna, eşten eşe kriptografik sanal para birimi
+Exec=manna-qt %u
 Terminal=false
 Type=Application
-Icon=bitcoin128
-MimeType=x-scheme-handler/bitcoin;
+Icon=manna128
+MimeType=x-scheme-handler/manna;
 Categories=Office;Finance;

@@ -1,6 +1,6 @@
 [Protocol]
-exec=bitcoin-qt '%u'
-protocol=bitcoin
+exec=manna-qt '%u'
+protocol=manna
 input=none
 output=none
 helper=true

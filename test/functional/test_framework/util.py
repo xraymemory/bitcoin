@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2014-2016 The Bitcoin Core developers
+# Copyright (c) 2014-2016 The manna Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Helpful routines for regression testing."""
@@ -103,7 +103,7 @@ def rpc_port(n):
     return PORT_MIN + PORT_RANGE + n + (MAX_NODES * PortSeed.n) % (PORT_RANGE - 1 - MAX_NODES)
 
 def check_json_precision():
-    """Make sure json library being used does not lose precision converting BTC values"""
+    """Make sure json library being used does not lose precision converting MNA values"""
     n = Decimal("20000000.00000003")
     satoshis = int(json.loads(json.dumps(float(n)))*1.0e8)
     if satoshis != 2000000000000003:
@@ -175,13 +175,13 @@ def sync_mempools(rpc_connections, *, wait=1, timeout=60):
         timeout -= wait
     raise AssertionError("Mempool sync failed")
 
-bitcoind_processes = {}
+mannad_processes = {}
 
 def initialize_datadir(dirname, n):
     datadir = os.path.join(dirname, "node"+str(n))
     if not os.path.isdir(datadir):
         os.makedirs(datadir)
-    with open(os.path.join(datadir, "bitcoin.conf"), 'w', encoding='utf8') as f:
+    with open(os.path.join(datadir, "manna.conf"), 'w', encoding='utf8') as f:
         f.write("regtest=1\n")
         f.write("port="+str(p2p_port(n))+"\n")
         f.write("rpcport="+str(rpc_port(n))+"\n")
@@ -194,8 +194,8 @@ def get_datadir_path(dirname, n):
 def get_auth_cookie(datadir, n):
     user = None
     password = None
-    if os.path.isfile(os.path.join(datadir, "bitcoin.conf")):
-        with open(os.path.join(datadir, "bitcoin.conf"), 'r') as f:
+    if os.path.isfile(os.path.join(datadir, "manna.conf")):
+        with open(os.path.join(datadir, "manna.conf"), 'r') as f:
             for line in f:
                 if line.startswith("rpcuser="):
                     assert user is None # Ensure that there is only one rpcuser line
@@ -225,14 +225,14 @@ def rpc_url(datadir, i, rpchost=None):
             host = rpchost
     return "http://%s:%s@%s:%d" % (rpc_u, rpc_p, host, int(port))
 
-def wait_for_bitcoind_start(process, datadir, i, rpchost=None):
+def wait_for_mannad_start(process, datadir, i, rpchost=None):
     '''
-    Wait for bitcoind to start. This means that RPC is accessible and fully initialized.
-    Raise an exception if bitcoind exits during initialization.
+    Wait for mannad to start. This means that RPC is accessible and fully initialized.
+    Raise an exception if mannad exits during initialization.
     '''
     while True:
         if process.poll() is not None:
-            raise Exception('bitcoind exited with status %i during initialization' % process.returncode)
+            raise Exception('mannad exited with status %i during initialization' % process.returncode)
         try:
             # Check if .cookie file to be created
             rpc = get_rpc_proxy(rpc_url(datadir, i, rpchost), i)
@@ -244,25 +244,25 @@ def wait_for_bitcoind_start(process, datadir, i, rpchost=None):
         except JSONRPCException as e: # Initialization phase
             if e.error['code'] != -28: # RPC in warmup?
                 raise # unknown JSON RPC exception
-        except ValueError as e: # cookie file not found and no rpcuser or rpcassword. bitcoind still starting
+        except ValueError as e: # cookie file not found and no rpcuser or rpcassword. mannad still starting
             if "No RPC credentials" not in str(e):
                 raise
         time.sleep(0.25)
 
 
 def _start_node(i, dirname, extra_args=None, rpchost=None, timewait=None, binary=None, stderr=None):
-    """Start a bitcoind and return RPC connection to it
+    """Start a mannad and return RPC connection to it
 
     This function should only be called from within test_framework, not by individual test scripts."""
 
     datadir = os.path.join(dirname, "node"+str(i))
     if binary is None:
-        binary = os.getenv("BITCOIND", "bitcoind")
+        binary = os.getenv("BITCOIND", "mannad")
     args = [binary, "-datadir=" + datadir, "-server", "-keypool=1", "-discover=0", "-rest", "-logtimemicros", "-debug", "-debugexclude=libevent", "-debugexclude=leveldb", "-mocktime=" + str(get_mocktime()), "-uacomment=testnode%d" % i]
     if extra_args is not None: args.extend(extra_args)
-    bitcoind_processes[i] = subprocess.Popen(args, stderr=stderr)
-    logger.debug("initialize_chain: bitcoind started, waiting for RPC to come up")
-    wait_for_bitcoind_start(bitcoind_processes[i], datadir, i, rpchost)
+    mannad_processes[i] = subprocess.Popen(args, stderr=stderr)
+    logger.debug("initialize_chain: mannad started, waiting for RPC to come up")
+    wait_for_mannad_start(mannad_processes[i], datadir, i, rpchost)
     logger.debug("initialize_chain: RPC successfully started")
     proxy = get_rpc_proxy(rpc_url(datadir, i, rpchost), i, timeout=timewait)
 
@@ -277,7 +277,7 @@ def assert_start_raises_init_error(i, dirname, extra_args=None, expected_msg=Non
             node = _start_node(i, dirname, extra_args, stderr=log_stderr)
             _stop_node(node, i)
         except Exception as e:
-            assert 'bitcoind exited' in str(e) #node must have shutdown
+            assert 'mannad exited' in str(e) #node must have shutdown
             if expected_msg is not None:
                 log_stderr.seek(0)
                 stderr = log_stderr.read().decode('utf-8')
@@ -285,13 +285,13 @@ def assert_start_raises_init_error(i, dirname, extra_args=None, expected_msg=Non
                     raise AssertionError("Expected error \"" + expected_msg + "\" not found in:\n" + stderr)
         else:
             if expected_msg is None:
-                assert_msg = "bitcoind should have exited with an error"
+                assert_msg = "mannad should have exited with an error"
             else:
-                assert_msg = "bitcoind should have exited with expected error " + expected_msg
+                assert_msg = "mannad should have exited with expected error " + expected_msg
             raise AssertionError(assert_msg)
 
 def _start_nodes(num_nodes, dirname, extra_args=None, rpchost=None, timewait=None, binary=None):
-    """Start multiple bitcoinds, return RPC connections to them
+    """Start multiple mannads, return RPC connections to them
     
     This function should only be called from within test_framework, not by individual test scripts."""
 
@@ -312,7 +312,7 @@ def log_filename(dirname, n_node, logname):
     return os.path.join(dirname, "node"+str(n_node), "regtest", logname)
 
 def _stop_node(node, i):
-    """Stop a bitcoind test node
+    """Stop a mannad test node
 
     This function should only be called from within test_framework, not by individual test scripts."""
 
@@ -321,18 +321,18 @@ def _stop_node(node, i):
         node.stop()
     except http.client.CannotSendRequest as e:
         logger.exception("Unable to stop node")
-    return_code = bitcoind_processes[i].wait(timeout=BITCOIND_PROC_WAIT_TIMEOUT)
-    del bitcoind_processes[i]
+    return_code = mannad_processes[i].wait(timeout=BITCOIND_PROC_WAIT_TIMEOUT)
+    del mannad_processes[i]
     assert_equal(return_code, 0)
 
 def _stop_nodes(nodes):
-    """Stop multiple bitcoind test nodes
+    """Stop multiple mannad test nodes
 
     This function should only be called from within test_framework, not by individual test scripts."""
 
     for i, node in enumerate(nodes):
         _stop_node(node, i)
-    assert not bitcoind_processes.values() # All connections must be gone now
+    assert not mannad_processes.values() # All connections must be gone now
 
 def set_node_times(nodes, t):
     for node in nodes:
@@ -430,10 +430,10 @@ def assert_fee_amount(fee, tx_size, fee_per_kB):
     """Assert the fee was in range"""
     target_fee = tx_size * fee_per_kB / 1000
     if fee < target_fee:
-        raise AssertionError("Fee of %s BTC too low! (Should be %s BTC)"%(str(fee), str(target_fee)))
+        raise AssertionError("Fee of %s MNA too low! (Should be %s MNA)"%(str(fee), str(target_fee)))
     # allow the wallet's estimation to be at most 2 bytes off
     if fee > (tx_size + 2) * fee_per_kB / 1000:
-        raise AssertionError("Fee of %s BTC too high! (Should be %s BTC)"%(str(fee), str(target_fee)))
+        raise AssertionError("Fee of %s MNA too high! (Should be %s MNA)"%(str(fee), str(target_fee)))
 
 def assert_equal(thing1, thing2, *args):
     if thing1 != thing2 or any(thing1 != arg for arg in args):
